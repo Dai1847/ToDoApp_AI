@@ -5,8 +5,9 @@ import prisma from "@/lib/prisma";
 
 export async function PATCH(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user) return NextResponse.json({ message: "認証が必要です" }, { status: 401 });
 
@@ -15,7 +16,7 @@ export async function PATCH(
 
         // Verify ownership
         const existingTask = await prisma.task.findUnique({
-            where: { id: params.id },
+            where: { id },
         });
 
         if (!existingTask || existingTask.userId !== (session.user as any).id) {
@@ -23,7 +24,7 @@ export async function PATCH(
         }
 
         const updatedTask = await prisma.task.update({
-            where: { id: params.id },
+            where: { id },
             data: {
                 status,
                 title,
@@ -47,15 +48,16 @@ export async function PATCH(
 
 export async function DELETE(
     req: Request,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
+    const { id } = await params;
     const session = await getServerSession(authOptions);
     if (!session?.user) return NextResponse.json({ message: "認証が必要です" }, { status: 401 });
 
     try {
         await prisma.task.delete({
             where: {
-                id: params.id,
+                id,
                 userId: (session.user as any).id
             },
         });
