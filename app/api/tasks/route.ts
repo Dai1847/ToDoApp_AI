@@ -18,7 +18,7 @@ export async function POST(req: Request) {
 
         const task = await prisma.task.create({
             data: {
-                userId: (session.user as any).id,
+                userId: session.user.id,
                 title,
                 description,
                 dueDate: dueDate ? new Date(dueDate) : null,
@@ -54,7 +54,7 @@ export async function GET(req: Request) {
     const status = searchParams.get("status");
     const view = searchParams.get("view"); // daily, weekly, monthly
 
-    const where: any = { userId: (session.user as any).id };
+    const where: any = { userId: session.user.id };
     if (status) where.status = status;
 
     // Add date filtering for views if needed...

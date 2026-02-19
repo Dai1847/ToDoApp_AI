@@ -19,7 +19,7 @@ export async function PATCH(
             where: { id },
         });
 
-        if (!existingTask || existingTask.userId !== (session.user as any).id) {
+        if (!existingTask || existingTask.userId !== session.user.id) {
             return NextResponse.json({ message: "権限がありません" }, { status: 403 });
         }
 
@@ -58,7 +58,7 @@ export async function DELETE(
         await prisma.task.delete({
             where: {
                 id,
-                userId: (session.user as any).id
+                userId: session.user.id
             },
         });
         return NextResponse.json({ message: "削除しました" });

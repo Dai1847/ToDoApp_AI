@@ -11,7 +11,7 @@ export async function POST(req: Request) {
         const { content } = await req.json();
         const memo = await prisma.memo.create({
             data: {
-                userId: (session.user as any).id,
+                userId: session.user.id,
                 content,
             },
         });
@@ -27,7 +27,7 @@ export async function GET(req: Request) {
 
     try {
         const memos = await prisma.memo.findMany({
-            where: { userId: (session.user as any).id },
+            where: { userId: session.user.id },
             orderBy: { createdAt: "desc" },
         });
         return NextResponse.json(memos);

@@ -12,7 +12,7 @@ import {
   LayoutTemplate,
   ChevronRight
 } from "lucide-react";
-import { Task, Memo } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 async function getStats(userId: string) {
   const today = new Date();
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
           </div>
           <div className="space-y-4">
             {stats.upcomingTasks.length > 0 ? (
-              stats.upcomingTasks.map((task: Task) => (
+              stats.upcomingTasks.map((task: Prisma.TaskGetPayload<{}>) => (
                 <div key={task.id} className="glass-card p-4 flex items-center justify-between group hover:border-indigo-500/30 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className={`p-2 rounded-lg ${task.priority === 'high' ? 'bg-red-500/10 text-red-500' :
@@ -167,7 +167,7 @@ export default async function DashboardPage() {
               最新のメモ
             </h2>
             <div className="space-y-3">
-              {stats.recentMemos.map((memo: Memo) => (
+              {stats.recentMemos.map((memo: Prisma.MemoGetPayload<{}>) => (
                 <Link key={memo.id} href={`/memos/${memo.id}`} className="glass-card p-4 block hover:bg-white/5 transition-colors">
                   <p className="text-sm line-clamp-2">{memo.content}</p>
                   <p className="text-[10px] opacity-40 mt-2">
