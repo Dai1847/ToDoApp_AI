@@ -12,6 +12,7 @@ import {
   LayoutTemplate,
   ChevronRight
 } from "lucide-react";
+import { Task, Memo } from "@prisma/client";
 
 async function getStats(userId: string) {
   const today = new Date();
@@ -39,7 +40,12 @@ async function getStats(userId: string) {
 
 export default async function DashboardPage() {
   const session = await getServerSession(authOptions);
-  const stats = await getStats(session?.user?.id as string);
+
+  if (!session?.user?.id) {
+    return <div>ログインが必要です</div>;
+  }
+
+  const stats = await getStats(session.user.id);
 
   return (
     <div className="mx-auto max-w-7xl p-4 md:p-8 space-y-8">
@@ -106,11 +112,11 @@ export default async function DashboardPage() {
           </div>
           <div className="space-y-4">
             {stats.upcomingTasks.length > 0 ? (
-              stats.upcomingTasks.map((task) => (
+              stats.upcomingTasks.map((task: Task) => (
                 <div key={task.id} className="glass-card p-4 flex items-center justify-between group hover:border-indigo-500/30 transition-colors">
                   <div className="flex items-center gap-4">
                     <div className={`p-2 rounded-lg ${task.priority === 'high' ? 'bg-red-500/10 text-red-500' :
-                        task.priority === 'medium' ? 'bg-amber-500/10 text-amber-500' : 'bg-blue-500/10 text-blue-500'
+                      task.priority === 'medium' ? 'bg-amber-500/10 text-amber-500' : 'bg-blue-500/10 text-blue-500'
                       }`}>
                       <AlertCircle size={20} />
                     </div>
@@ -161,7 +167,7 @@ export default async function DashboardPage() {
               最新のメモ
             </h2>
             <div className="space-y-3">
-              {stats.recentMemos.map((memo) => (
+              {stats.recentMemos.map((memo: Memo) => (
                 <Link key={memo.id} href={`/memos/${memo.id}`} className="glass-card p-4 block hover:bg-white/5 transition-colors">
                   <p className="text-sm line-clamp-2">{memo.content}</p>
                   <p className="text-[10px] opacity-40 mt-2">
